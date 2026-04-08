@@ -1,0 +1,92 @@
+---
+import Layout from '@layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const allTags = [...new Set(projects.flatMap((p) => p.data.tags))].sort();
+---
+
+<Layout title="Proyectos" description="Proyectos de software — Full-Stack, AI, DevOps, Mobile">
+  <section class="section-container">
+    <p class="section-label">// work</p>
+    <h1 class="section-title">Proyectos</h1>
+    <p class="section-subtitle">Desde MVPs con AI hasta sistemas enterprise en producción</p>
+
+    <!-- Filter tags -->
+    <div class="flex flex-wrap gap-2 mb-10" id="filters">
+      <button class="tech-pill !cursor-pointer filter-btn !text-amber-400 !border-amber-400/20 !bg-amber-400/5" data-tag="all">Todos</button>
+      {allTags.map((tag) => (
+        <button class="tech-pill !cursor-pointer filter-btn opacity-50 hover:opacity-100 transition-opacity" data-tag={tag}>
+          {tag}
+        </button>
+      ))}
+    </div>
+
+    <!-- Project grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="project-grid">
+      {projects.map((project) => (
+        <a
+          href={`/projects/${project.id}`}
+          class="card group cursor-pointer project-card"
+          data-tags={JSON.stringify(project.data.tags)}
+        >
+          <div class="flex items-start justify-between mb-5">
+            <span class={`badge-${project.data.status}`}>{project.data.statusLabel}</span>
+            <svg class="w-4 h-4 text-[#2a2a35] group-hover:text-amber-400/60 transition-all duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 17L17 7M17 7H7M17 7v10" />
+            </svg>
+          </div>
+
+          <h2 class="text-lg font-semibold text-white mb-2 group-hover:text-amber-400 transition-colors duration-300" style="font-family: 'Instrument Serif', serif; font-size: 1.35rem;">
+            {project.data.title}
+          </h2>
+          <p class="text-[#505060] text-sm mb-4 leading-relaxed line-clamp-2">
+            {project.data.description}
+          </p>
+
+          <div class="flex flex-wrap gap-1.5 mb-4">
+            {project.data.tags.map((tag: string) => (
+              <span class="badge">{tag}</span>
+            ))}
+          </div>
+
+          <div class="flex flex-wrap gap-1.5">
+            {project.data.stack.slice(0, 6).map((tech: string) => (
+              <span class="tech-pill">{tech}</span>
+            ))}
+            {project.data.stack.length > 6 && (
+              <span class="text-[10px] text-[#3a3a45] px-2 py-1">+{project.data.stack.length - 6}</span>
+            )}
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <script>
+    const buttons = document.querySelectorAll('.filter-btn');
+    const cards = document.querySelectorAll('.project-card');
+
+    buttons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const tag = (btn as HTMLElement).dataset.tag;
+
+        buttons.forEach((b) => {
+          if (b === btn) {
+            b.classList.remove('opacity-50');
+            b.classList.add('!text-amber-400', '!border-amber-400/20', '!bg-amber-400/5');
+          } else {
+            b.classList.add('opacity-50');
+            b.classList.remove('!text-amber-400', '!border-amber-400/20', '!bg-amber-400/5');
+          }
+        });
+
+        cards.forEach((card) => {
+          const cardTags = JSON.parse((card as HTMLElement).dataset.tags || '[]');
+          const show = tag === 'all' || cardTags.includes(tag);
+          (card as HTMLElement).style.display = show ? '' : 'none';
+        });
+      });
+    });
+  </script>
+</Layout>
