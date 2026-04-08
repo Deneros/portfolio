@@ -52,6 +52,8 @@ import { social } from '@/config';
       <!-- Contact form -->
       <div class="md:col-span-3">
         <form class="space-y-5" action="https://formspree.io/f/mykbayep" method="POST">
+          <!-- Honeypot: bots fill this, humans don't see it -->
+          <input type="text" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off" />
           <div>
             <label for="name" class="block text-xs font-medium text-[#606070] mb-2 tracking-wide">Nombre</label>
             <input
