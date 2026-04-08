@@ -30,6 +30,16 @@ const allTags = [...new Set(projects.flatMap((p) => p.data.tags))].sort();
           class="card group cursor-pointer project-card"
           data-tags={JSON.stringify(project.data.tags)}
         >
+          {project.data.image && (
+            <div class="mb-4 -mx-6 -mt-6 overflow-hidden rounded-t-xl">
+              <img
+                src={project.data.image}
+                alt={project.data.title}
+                class="w-full h-40 object-cover object-top opacity-80 group-hover:opacity-100 transition-opacity duration-500"
+                loading="lazy"
+              />
+            </div>
+          )}
           <div class="flex items-start justify-between mb-5">
             <span class={`badge-${project.data.status}`}>{project.data.statusLabel}</span>
             <svg class="w-4 h-4 text-[#2a2a35] group-hover:text-amber-400/60 transition-all duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -109,6 +109,16 @@ const featuredProjects = projects.filter((p) => p.data.featured);
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       {featuredProjects.map((project) => (
         <a href={`/projects/${project.id}`} class="card group cursor-pointer">
+          {project.data.image && (
+            <div class="mb-4 -mx-6 -mt-6 overflow-hidden rounded-t-xl">
+              <img
+                src={project.data.image}
+                alt={project.data.title}
+                class="w-full h-40 object-cover object-top opacity-80 group-hover:opacity-100 transition-opacity duration-500"
+                loading="lazy"
+              />
+            </div>
+          )}
           <div class="flex items-start justify-between mb-5">
             <span class={`badge-${project.data.status}`}>{project.data.statusLabel}</span>
             <svg class="w-4 h-4 text-[#2a2a35] group-hover:text-amber-400/60 transition-colors duration-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">

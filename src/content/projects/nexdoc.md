@@ -23,6 +23,7 @@ tags:
   - AI
   - Full-Stack
   - Architecture
+image: /screenshots/nexdoc-dashboard.png
 featured: true
 order: 1
 ---

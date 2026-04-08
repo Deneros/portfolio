@@ -14,6 +14,7 @@ stack:
 tags:
   - Frontend
   - Modern React
+image: /screenshots/crm-dashboard.png
 featured: true
 order: 5
 ---

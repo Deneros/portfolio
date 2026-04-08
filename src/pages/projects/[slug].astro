@@ -45,6 +45,17 @@ const { Content } = await render(project);
         ))}
       </div>
 
+      {project.data.image && (
+        <div class="rounded-xl overflow-hidden mb-8 animate-fade-up delay-3" style="border: 1px solid rgba(255,255,255,0.04);">
+          <img
+            src={project.data.image}
+            alt={project.data.title}
+            class="w-full"
+            loading="lazy"
+          />
+        </div>
+      )}
+
       {(project.data.github || project.data.demo) && (
         <div class="flex gap-3 animate-fade-up delay-3">
           {project.data.github && (
