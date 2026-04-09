@@ -19,6 +19,7 @@ tags:
   - Enterprise
   - Full-Stack
   - Architecture
+image: /screenshots/aes-dashboard.png
 featured: false
 order: 6
 ---

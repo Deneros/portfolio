@@ -20,7 +20,7 @@ tags:
   - AI/ML
   - Security
   - Full-Stack
-image: /screenshots/irix-login.png
+image: /screenshots/irix-inbox.png
 featured: true
 order: 2
 ---
