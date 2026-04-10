@@ -24,7 +24,6 @@ image: /screenshots/irix-inbox.png
 gallery:
   - /screenshots/irix-inbox.png
   - /screenshots/irix-welcome.png
-  - /screenshots/irix-login.png
 featured: true
 order: 2
 ---

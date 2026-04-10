@@ -15,6 +15,7 @@ const projects = defineCollection({
     demo: z.string().optional(),
     image: z.string().optional(),
     gallery: z.array(z.string()).optional(),
+    galleryLayout: z.enum(['desktop', 'mobile']).default('desktop'),
     video: z.string().optional(),
     featured: z.boolean().default(false),
     order: z.number().default(99),

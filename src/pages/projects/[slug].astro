@@ -14,6 +14,7 @@ const { project } = Astro.props;
 const { Content } = await render(project);
 
 const gallery = project.data.gallery || (project.data.image ? [project.data.image] : []);
+const isMobileGallery = project.data.galleryLayout === 'mobile';
 ---
 
 <Layout title={project.data.title} description={project.data.description}>
@@ -50,7 +51,37 @@ const gallery = project.data.gallery || (project.data.image ? [project.data.imag
       {/* ── Screenshot Gallery ── */}
       {gallery.length > 0 && (
         <div class="animate-fade-up delay-3">
-          {gallery.length === 1 ? (
+          {isMobileGallery ? (
+            /* ── Mobile Device Showcase ── */
+            <div class="mobile-showcase">
+              <div class="mobile-showcase-track">
+                {gallery.map((src: string, i: number) => (
+                  <div
+                    class="mobile-device cursor-pointer"
+                    data-gallery-open={String(i)}
+                    style={`animation-delay: ${0.08 * i}s`}
+                  >
+                    <div class="mobile-bezel">
+                      <div class="mobile-notch"></div>
+                      <div class="gallery-number">{String(i + 1).padStart(2, '0')}</div>
+                      <img
+                        src={src}
+                        alt={`${project.data.title} — Pantalla ${i + 1}`}
+                        class="mobile-screen"
+                        loading="lazy"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div class="mobile-showcase-hint">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+                <span>Deslizar para ver más</span>
+              </div>
+            </div>
+          ) : gallery.length === 1 ? (
             /* Single image — simple hero */
             <div class="gallery-frame cursor-pointer" data-gallery-open="0">
               <img
@@ -279,6 +310,135 @@ const gallery = project.data.gallery || (project.data.image ? [project.data.imag
 
     .gallery-grid-3 > :last-child {
       grid-column: auto;
+    }
+  }
+
+  /* ── Mobile Device Showcase ── */
+  .mobile-showcase {
+    position: relative;
+  }
+
+  .mobile-showcase-track {
+    display: flex;
+    gap: 1.25rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 1.5rem 0.5rem 2rem;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .mobile-showcase-track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mobile-device {
+    flex: 0 0 auto;
+    scroll-snap-align: center;
+    animation: device-float 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  @keyframes device-float {
+    from {
+      opacity: 0;
+      transform: translateY(20px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .mobile-bezel {
+    position: relative;
+    width: 180px;
+    background: #111118;
+    border-radius: 1.75rem;
+    padding: 0.65rem 0.4rem;
+    border: 1.5px solid rgba(255,255,255,0.08);
+    box-shadow:
+      0 8px 32px -8px rgba(0,0,0,0.6),
+      0 0 0 1px rgba(255,255,255,0.03) inset;
+    transition: border-color 0.4s, box-shadow 0.4s, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
+  }
+
+  .mobile-device:hover .mobile-bezel {
+    border-color: rgba(232, 167, 65, 0.25);
+    box-shadow:
+      0 12px 40px -8px rgba(0,0,0,0.7),
+      0 0 60px -20px rgba(232, 167, 65, 0.12),
+      0 0 0 1px rgba(232, 167, 65, 0.06) inset;
+    transform: translateY(-4px);
+  }
+
+  .mobile-notch {
+    width: 4rem;
+    height: 0.3rem;
+    background: rgba(255,255,255,0.08);
+    border-radius: 99px;
+    margin: 0.15rem auto 0.5rem;
+  }
+
+  .mobile-screen {
+    display: block;
+    width: 100%;
+    border-radius: 1.1rem;
+    opacity: 0.9;
+    transition: opacity 0.3s;
+  }
+
+  .mobile-device:hover .mobile-screen {
+    opacity: 1;
+  }
+
+  .mobile-device .gallery-number {
+    top: 0.5rem;
+    left: 0.55rem;
+    font-size: 8px;
+    padding: 0.15rem 0.35rem;
+    border-radius: 0.25rem;
+  }
+
+  .mobile-showcase-hint {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: #353545;
+    margin-top: 0.25rem;
+    animation: hint-pulse 2.5s ease-in-out infinite;
+  }
+
+  @keyframes hint-pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+
+  @media (min-width: 768px) {
+    .mobile-bezel {
+      width: 220px;
+    }
+
+    .mobile-showcase-hint {
+      display: none;
+    }
+
+    .mobile-showcase-track {
+      justify-content: center;
+      flex-wrap: wrap;
+      overflow-x: visible;
+      gap: 1.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .mobile-bezel {
+      width: 200px;
     }
   }
 

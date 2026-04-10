@@ -20,6 +20,7 @@ gallery:
   - /screenshots/auditglow-audits.jpg
   - /screenshots/auditglow-areas.jpg
   - /screenshots/auditglow-join.jpg
+galleryLayout: mobile
 featured: false
 order: 7
 ---

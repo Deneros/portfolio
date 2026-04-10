@@ -23,10 +23,10 @@ tags:
   - AI
   - Full-Stack
   - Architecture
-image: /screenshots/nexdoc-dashboard.png
+image: /screenshots/nexdoc-ask-ai.png
 gallery:
-  - /screenshots/nexdoc-dashboard.png
   - /screenshots/nexdoc-ask-ai.png
+  - /screenshots/nexdoc-dashboard.png
   - /screenshots/nexdoc-chat-history.png
   - /screenshots/nexdoc-login.png
 video: /screenshots/nexdoc-demo.mp4
