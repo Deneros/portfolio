@@ -29,6 +29,7 @@ gallery:
   - /screenshots/nexdoc-ask-ai.png
   - /screenshots/nexdoc-chat-history.png
   - /screenshots/nexdoc-login.png
+video: /screenshots/nexdoc-demo.mp4
 featured: true
 order: 1
 ---
