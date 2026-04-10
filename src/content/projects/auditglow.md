@@ -13,6 +13,13 @@ stack:
 tags:
   - Mobile
   - React Native
+image: /screenshots/auditglow-dashboard.jpg
+gallery:
+  - /screenshots/auditglow-dashboard.jpg
+  - /screenshots/auditglow-login.jpg
+  - /screenshots/auditglow-audits.jpg
+  - /screenshots/auditglow-areas.jpg
+  - /screenshots/auditglow-join.jpg
 featured: false
 order: 7
 ---

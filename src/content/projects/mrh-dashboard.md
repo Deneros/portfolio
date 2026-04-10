@@ -15,6 +15,15 @@ tags:
   - Frontend
   - Data Viz
   - Maps
+image: /screenshots/mrh-dashboard.png
+gallery:
+  - /screenshots/mrh-dashboard.png
+  - /screenshots/mrh-login.png
+  - /screenshots/mrh-task-detail.png
+  - /screenshots/mrh-agenda.png
+  - /screenshots/mrh-profile.png
+  - /screenshots/mrh-account.png
+  - /screenshots/mrh-new-task.png
 featured: false
 order: 8
 ---
