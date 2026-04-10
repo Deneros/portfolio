@@ -24,6 +24,11 @@ tags:
   - Full-Stack
   - Architecture
 image: /screenshots/nexdoc-dashboard.png
+gallery:
+  - /screenshots/nexdoc-dashboard.png
+  - /screenshots/nexdoc-ask-ai.png
+  - /screenshots/nexdoc-chat-history.png
+  - /screenshots/nexdoc-login.png
 featured: true
 order: 1
 ---

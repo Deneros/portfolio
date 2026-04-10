@@ -15,6 +15,9 @@ tags:
   - Frontend
   - Modern React
 image: /screenshots/crm-dashboard.png
+gallery:
+  - /screenshots/crm-dashboard.png
+  - /screenshots/crm-pipeline.png
 featured: true
 order: 5
 ---

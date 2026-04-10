@@ -12,6 +12,8 @@ export async function getStaticPaths() {
 
 const { project } = Astro.props;
 const { Content } = await render(project);
+
+const gallery = project.data.gallery || (project.data.image ? [project.data.image] : []);
 ---
 
 <Layout title={project.data.title} description={project.data.description}>
@@ -45,19 +47,58 @@ const { Content } = await render(project);
         ))}
       </div>
 
-      {project.data.image && (
-        <div class="rounded-xl overflow-hidden mb-8 animate-fade-up delay-3" style="border: 1px solid rgba(255,255,255,0.04);">
-          <img
-            src={project.data.image}
-            alt={project.data.title}
-            class="w-full"
-            loading="lazy"
-          />
+      {/* ── Screenshot Gallery ── */}
+      {gallery.length > 0 && (
+        <div class="animate-fade-up delay-3">
+          {gallery.length === 1 ? (
+            /* Single image — simple hero */
+            <div class="gallery-frame cursor-pointer" data-gallery-open="0">
+              <img
+                src={gallery[0]}
+                alt={project.data.title}
+                class="w-full"
+                loading="lazy"
+              />
+            </div>
+          ) : (
+            /* Multi-image showcase */
+            <div class="gallery-showcase">
+              {/* Hero — first image large */}
+              <div class="gallery-frame gallery-hero cursor-pointer" data-gallery-open="0">
+                <div class="gallery-number">01</div>
+                <img
+                  src={gallery[0]}
+                  alt={`${project.data.title} — Vista principal`}
+                  class="w-full"
+                  loading="lazy"
+                />
+              </div>
+
+              {/* Remaining images in grid */}
+              <div class={`gallery-grid gallery-grid-${Math.min(gallery.length - 1, 3)}`}>
+                {gallery.slice(1).map((src: string, i: number) => (
+                  <div
+                    class="gallery-frame cursor-pointer"
+                    data-gallery-open={String(i + 1)}
+                    style={`animation-delay: ${0.1 * (i + 1)}s`}
+                  >
+                    <div class="gallery-number">{String(i + 2).padStart(2, '0')}</div>
+                    <img
+                      src={src}
+                      alt={`${project.data.title} — Captura ${i + 2}`}
+                      class="w-full"
+                      loading="lazy"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
       {(project.data.github || project.data.demo) && (
-        <div class="flex gap-3 animate-fade-up delay-3">
+        <div class="flex gap-3 mt-8 animate-fade-up delay-4">
           {project.data.github && (
             <a href={project.data.github} target="_blank" rel="noopener" class="btn-outline text-xs">
               <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -82,4 +123,315 @@ const { Content } = await render(project);
       <Content />
     </div>
   </article>
+
+  {/* ── Lightbox Overlay ── */}
+  {gallery.length > 0 && (
+    <div id="lightbox" class="lightbox" aria-hidden="true">
+      <div class="lightbox-backdrop"></div>
+      <div class="lightbox-content">
+        <button class="lightbox-close" aria-label="Cerrar">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+
+        {gallery.length > 1 && (
+          <>
+            <button class="lightbox-nav lightbox-prev" aria-label="Anterior">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <button class="lightbox-nav lightbox-next" aria-label="Siguiente">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </>
+        )}
+
+        <div class="lightbox-counter">
+          <span id="lightbox-current">1</span> / <span>{gallery.length}</span>
+        </div>
+
+        <div class="lightbox-track">
+          {gallery.map((src: string, i: number) => (
+            <img
+              src={src}
+              alt={`${project.data.title} — ${i + 1}`}
+              class="lightbox-img"
+              data-index={i}
+              style={i === 0 ? '' : 'display:none'}
+              loading="lazy"
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  )}
 </Layout>
+
+<style>
+  /* ── Gallery Frames ── */
+  .gallery-frame {
+    position: relative;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.04);
+    background: rgba(12,12,20,0.6);
+    transition: border-color 0.4s, box-shadow 0.4s;
+  }
+
+  .gallery-frame:hover {
+    border-color: rgba(232, 167, 65, 0.2);
+    box-shadow: 0 4px 30px -8px rgba(0,0,0,0.5), 0 0 40px -15px rgba(232, 167, 65, 0.1);
+  }
+
+  .gallery-frame img {
+    display: block;
+    width: 100%;
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s;
+    opacity: 0.85;
+  }
+
+  .gallery-frame:hover img {
+    transform: scale(1.02);
+    opacity: 1;
+  }
+
+  .gallery-number {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: rgba(232, 167, 65, 0.6);
+    background: rgba(10,10,15,0.7);
+    backdrop-filter: blur(8px);
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    border: 1px solid rgba(255,255,255,0.06);
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  /* ── Gallery Layout ── */
+  .gallery-showcase {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .gallery-grid {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .gallery-grid-1 {
+    grid-template-columns: 1fr;
+  }
+
+  .gallery-grid-2 {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .gallery-grid-3 {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .gallery-grid-3 > :last-child {
+    grid-column: 1 / -1;
+  }
+
+  @media (max-width: 640px) {
+    .gallery-grid-2,
+    .gallery-grid-3 {
+      grid-template-columns: 1fr;
+    }
+
+    .gallery-grid-3 > :last-child {
+      grid-column: auto;
+    }
+  }
+
+  /* ── Lightbox ── */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+  }
+
+  .lightbox[aria-hidden="false"] {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .lightbox-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(5, 5, 10, 0.92);
+    backdrop-filter: blur(20px);
+  }
+
+  .lightbox-content {
+    position: relative;
+    width: 90vw;
+    max-width: 1100px;
+    max-height: 85vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .lightbox-track {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .lightbox-img {
+    max-width: 100%;
+    max-height: 80vh;
+    border-radius: 0.75rem;
+    border: 1px solid rgba(255,255,255,0.06);
+    object-fit: contain;
+    box-shadow: 0 20px 60px -15px rgba(0,0,0,0.7);
+  }
+
+  .lightbox-close {
+    position: absolute;
+    top: -2.5rem;
+    right: 0;
+    color: #606070;
+    transition: color 0.2s;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0.5rem;
+  }
+
+  .lightbox-close:hover {
+    color: #fff;
+  }
+
+  .lightbox-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #505060;
+    transition: color 0.2s, background 0.2s;
+    cursor: pointer;
+    background: rgba(10,10,15,0.6);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 50%;
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+  }
+
+  .lightbox-nav:hover {
+    color: #e8a741;
+    border-color: rgba(232, 167, 65, 0.3);
+    background: rgba(232, 167, 65, 0.08);
+  }
+
+  .lightbox-prev {
+    left: -3.5rem;
+  }
+
+  .lightbox-next {
+    right: -3.5rem;
+  }
+
+  .lightbox-counter {
+    position: absolute;
+    bottom: -2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: #404050;
+  }
+
+  @media (max-width: 768px) {
+    .lightbox-prev {
+      left: 0.5rem;
+    }
+
+    .lightbox-next {
+      right: 0.5rem;
+    }
+
+    .lightbox-nav {
+      background: rgba(10,10,15,0.8);
+    }
+
+    .lightbox-close {
+      top: -2rem;
+    }
+  }
+</style>
+
+<script>
+  const lightbox = document.getElementById('lightbox');
+  if (lightbox) {
+    const imgs = lightbox.querySelectorAll<HTMLImageElement>('.lightbox-img');
+    const counter = document.getElementById('lightbox-current');
+    let current = 0;
+
+    function show(index: number) {
+      current = (index + imgs.length) % imgs.length;
+      imgs.forEach((img, i) => {
+        img.style.display = i === current ? '' : 'none';
+      });
+      if (counter) counter.textContent = String(current + 1);
+    }
+
+    function open(index: number) {
+      show(index);
+      lightbox.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function close() {
+      lightbox.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+
+    // Open triggers
+    document.querySelectorAll<HTMLElement>('[data-gallery-open]').forEach((el) => {
+      el.addEventListener('click', () => {
+        open(parseInt(el.dataset.galleryOpen || '0', 10));
+      });
+    });
+
+    // Close
+    lightbox.querySelector('.lightbox-backdrop')?.addEventListener('click', close);
+    lightbox.querySelector('.lightbox-close')?.addEventListener('click', close);
+
+    // Nav
+    lightbox.querySelector('.lightbox-prev')?.addEventListener('click', () => show(current - 1));
+    lightbox.querySelector('.lightbox-next')?.addEventListener('click', () => show(current + 1));
+
+    // Keyboard
+    document.addEventListener('keydown', (e) => {
+      if (lightbox.getAttribute('aria-hidden') === 'true') return;
+      if (e.key === 'Escape') close();
+      if (e.key === 'ArrowLeft') show(current - 1);
+      if (e.key === 'ArrowRight') show(current + 1);
+    });
+  }
+</script>

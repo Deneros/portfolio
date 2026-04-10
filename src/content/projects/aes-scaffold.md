@@ -20,6 +20,10 @@ tags:
   - Full-Stack
   - Architecture
 image: /screenshots/aes-dashboard.png
+gallery:
+  - /screenshots/aes-dashboard.png
+  - /screenshots/aes-formbuilder.png
+  - /screenshots/aes-scheduling.png
 featured: false
 order: 6
 ---
