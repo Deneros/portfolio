@@ -10,7 +10,7 @@ readTime: "10 min"
 draft: false
 ---
 
-Después de probar Heroku, Railway, Render, y pelearme con configuraciones manuales de Docker Compose en VPS, descubrí Dokploy. Es una plataforma de deployment self-hosted que te da la experiencia de un PaaS pero en tu propio servidor. Y me encanta.
+Después de probar Heroku, Render, y pelearme con configuraciones manuales de Docker Compose en VPS, descubrí Dokploy. Es una plataforma de deployment self-hosted que te da la experiencia de un PaaS pero en tu propio servidor. Y me encanta.
 
 ## ¿Qué es Dokploy?
 
@@ -25,15 +25,15 @@ Dokploy es un **PaaS self-hosted** open source. Instalas un agente en tu VPS y o
 - Docker Compose nativo
 - Ambientes separados (testing, staging, production)
 
-Básicamente, es tu propio Vercel/Railway pero sin pagar por request ni preocuparte por vendor lock-in.
+Básicamente, es tu propio Vercel/Render pero sin pagar por request ni preocuparte por vendor lock-in.
 
 ## Por qué no las alternativas
 
 ### Vercel/Netlify
 Excelentes para frontend, pero para backend con bases de datos, workers, y servicios múltiples se vuelven caros y limitados. Intenta deployar un Spring Boot con PostgreSQL y Redis en Vercel — no es su caso de uso.
 
-### Railway/Render
-Buenos, pero el pricing escala rápido cuando tienes 3-4 servicios corriendo. Un proyecto con backend + DB + Redis + worker ya son $40-60/mes. Multiplica eso por 3 proyectos y estás pagando más que un VPS dedicado.
+### Render
+Bueno, pero el pricing escala rápido cuando tienes 3-4 servicios corriendo. Un proyecto con backend + DB + Redis + worker ya son $40-60/mes. Multiplica eso por 3 proyectos y estás pagando más que un VPS dedicado.
 
 ### Docker Compose en VPS crudo
 Funciona, pero manejar SSL, logs, rollbacks, y CI/CD manualmente es trabajo de operaciones que no quiero hacer. Cada deploy es SSH + git pull + docker compose up y rezar que no se rompa nada.
@@ -125,8 +125,7 @@ Jenkins valida que el código pase tests y análisis estático antes de que Dokp
 
 ## Limitaciones
 
-- **No es para escala masiva**: Si necesitas auto-scaling con múltiples nodos, necesitas Kubernetes. Dokploy corre en un solo servidor.
-- **Single server**: Para alta disponibilidad necesitas otro approach. Si el VPS se cae, todo se cae.
+- **No es para escala masiva**: Para aplicaciones con cientos de instancias, Kubernetes sigue siendo la opción. Aunque Dokploy soporta conectar múltiples servidores (multi-node) para distribuir servicios entre nodos — algo como microservicios distribuidos sin la complejidad de K8s — no tiene auto-scaling automático.
 - **Comunidad pequeña**: Menos Stack Overflow answers que Heroku o Vercel. Pero la documentación es buena y el Discord es activo.
 - **Debugging de networking entre servicios**: Cuando dos servicios en Dokploy no se ven entre sí, el debug es más manual que en Docker Compose local. Tuve que configurar redes internas manualmente para que el backend pudiera resolver el hostname de MinIO.
 
@@ -134,6 +133,6 @@ Jenkins valida que el código pase tests y análisis estático antes de que Dokp
 
 Si eres un desarrollador que quiere deployar proyectos sin pagar de más ni pasar horas configurando infraestructura, Dokploy es la respuesta. No reemplaza Kubernetes para aplicaciones enterprise con 100+ instancias, pero para el 90% de los proyectos que hago, es más que suficiente.
 
-Un VPS de $12/mes con Dokploy me da más que un plan de $50/mes en Railway. Y el control total sobre mis datos y mi infraestructura no tiene precio.
+Un VPS de $12/mes con Dokploy me da más que un plan de $50/mes en Render. Y el control total sobre mis datos y mi infraestructura no tiene precio.
 
 El caso del ERP con 4 servicios demostró que Dokploy maneja complejidad real — no es solo para landing pages y side projects. Con CI/CD via Jenkins y ambientes separados, tengo un flujo de deployment profesional sin la complejidad operacional de Kubernetes.
