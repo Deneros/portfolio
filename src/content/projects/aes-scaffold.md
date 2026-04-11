@@ -1,6 +1,10 @@
 ---
 title: AES ERP System
 description: Sistema ERP empresarial con arquitectura modular, data tables avanzadas y gestión de estado con Zustand.
+longDescription: |
+  ERP modular para gestión empresarial con tablas de datos avanzadas (sorting, filtros,
+  paginación server-side), formularios dinámicos, reportes con Recharts, y tablas de
+  decisión configurables para reglas de cálculo. Backend con Spring Boot y Clean Architecture.
 status: development
 statusLabel: In Development
 stack:

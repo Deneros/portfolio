@@ -1,6 +1,10 @@
 ---
 title: AuditGlow
 description: App móvil de auditoría con documentación fotográfica, roles y reportes cloud.
+longDescription: |
+  Aplicación móvil cross-platform para auditorías de instalaciones. Permite documentar
+  condiciones con fotos antes/después, asignar roles (auditor, supervisor, cliente),
+  evaluar áreas con formularios configurables y generar reportes automáticos exportables.
 status: design
 statusLabel: Design Phase
 stack:
