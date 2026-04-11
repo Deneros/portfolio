@@ -18,13 +18,13 @@ Llevo meses usando Claude Code como mi herramienta principal de desarrollo. No c
 La mayoría de desarrolladores usan AI para generar snippets. Yo la uso como un ciclo completo:
 
 1. **Planificación** → Claude analiza requirements y propone arquitectura
-2. **Diseño** → SDD (Software Design Document) generado colaborativamente
-3. **Implementación** → TDD con Claude escribiendo tests primero
+2. **Especificación** → SDD (Spec Driven Development) — contratos primero, código después
+3. **Implementación** → TDD para lógica de dominio
 4. **Testing** → Unit tests, integración, e2e
 5. **Documentación** → Generada desde el código real, no inventada
 6. **Review** → Claude revisa sus propios cambios contra las convenciones
 
-Cada paso tiene su herramienta en Claude Code. Veamos.
+La clave es saber cuándo usar **SDD** y cuándo **TDD** — no compiten, se complementan. Veamos.
 
 ## AGENTS.md: el cerebro del proyecto
 
@@ -126,9 +126,78 @@ Claude lee el requirements, analiza la arquitectura existente, y propone:
 
 Yo reviso, ajusto, apruebo. Recién entonces empieza a implementar. Esto previene el 80% del retrabajo.
 
-## TDD: Tests primero, siempre
+## SDD: Spec Driven Development — el contrato primero
 
-Mi flujo de TDD con Claude Code:
+SDD (Spec Driven Development) es escribir la especificación antes del código. En vez de codear un endpoint y después documentarlo, **defines el contrato OpenAPI primero** y generas código desde ahí.
+
+¿Por qué? Porque el frontend no puede esperar a que el backend termine. Con el spec definido, ambos equipos (o ambas instancias de Claude Code) trabajan en paralelo.
+
+Mi flujo SDD con Claude Code:
+
+```
+> Define el OpenAPI spec para el módulo de certificaciones.
+> Endpoints: CRUD + suspender + reactivar.
+> Incluye schemas de request/response, códigos de error, y ejemplos.
+```
+
+Claude genera el spec:
+
+```yaml
+# openapi/certifications.yml
+paths:
+  /api/certifications/{id}/suspend:
+    patch:
+      summary: Suspender certificación activa
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SuspendRequest'
+      responses:
+        '204':
+          description: Certificación suspendida
+        '400':
+          description: Certificación no está activa
+        '404':
+          description: Certificación no encontrada
+
+components:
+  schemas:
+    SuspendRequest:
+      type: object
+      required: [reason]
+      properties:
+        reason:
+          type: string
+          minLength: 10
+          example: "No conformidad mayor en auditoría #45"
+```
+
+Desde este spec:
+- El **backend** genera interfaces de controllers y DTOs con OpenAPI Generator
+- El **frontend** genera el cliente API tipado automáticamente
+- La **documentación** ya está escrita — es el spec mismo
+
+### ¿Cuándo uso SDD?
+
+- APIs que consume el frontend u otros servicios
+- Contratos entre microservicios
+- Cuando frontend y backend se desarrollan en paralelo
+- Integraciones con terceros (defines el contrato antes de implementar)
+
+## TDD: la lógica de dominio se testea primero
+
+TDD es para lo que el spec **no cubre** — la lógica interna. El spec define que `PATCH /suspend` retorna 204 o 400, pero no define *cómo* se valida internamente.
+
+Mi flujo TDD con Claude Code:
 
 1. Defino el comportamiento esperado en lenguaje natural
 2. Claude escribe el test que falla
@@ -169,25 +238,26 @@ void shouldRejectSuspensionOfInactiveCertification() {
 
 Después implementa el UseCase. El test ya define el contrato — la implementación es mecánica.
 
-## SDD: Software Design Document
+### ¿Cuándo uso TDD?
 
-Para features complejas, genero un SDD antes de implementar. Es más detallado que el requirements:
+- Lógica de dominio (reglas de negocio, validaciones, cálculos)
+- Casos de uso con edge cases complejos
+- Refactoring — los tests te protegen de romper comportamiento existente
+- Cualquier código donde un bug sería costoso de detectar en producción
+
+## SDD + TDD: el combo completo
+
+En la práctica, uso ambos en el mismo feature:
 
 ```
-> /plan Genera un SDD para el módulo de tablas de decisión.
-> Incluye: modelo de datos, API contracts, flujo de evaluación,
-> y edge cases.
+1. SDD → Defino el spec OpenAPI (qué endpoints, qué contratos)
+2. TDD → Escribo tests para la lógica de dominio (cómo funciona internamente)
+3. Implemento el dominio (pasa los tests)
+4. Implemento el controller (cumple el spec)
+5. Tests de integración (el spec + la lógica funcionan juntos)
 ```
 
-El SDD resultante incluye:
-
-- **Modelo de dominio**: Entidades, value objects, relaciones
-- **API contracts**: Endpoints con request/response de ejemplo
-- **Flujo de evaluación**: Cómo el motor procesa las reglas
-- **Edge cases**: Conflictos de reglas, reglas circulares, performance
-- **Plan de migración**: Scripts Flyway con rollback
-
-Guardo el SDD en `docs/design/` y lo referencio durante la implementación. Claude lo lee y mantiene consistencia.
+**SDD define el QUÉ** (el contrato público). **TDD valida el CÓMO** (el comportamiento interno). No compiten — cada uno cubre una capa diferente del sistema.
 
 ## Skills: capacidades reutilizables
 
@@ -366,8 +436,13 @@ Claude lee el código actual, los tests (que son la especificación viva), y gen
 ## El flujo completo
 
 ```
-Requirements.md → /plan → SDD → TDD (test → impl → refactor) → /review → /test → Deploy
+Requirements.md → /plan → SDD (spec OpenAPI) → TDD (domain logic) → Implementación → /review → /test → Deploy
 ```
+
+- **Requirements.md**: Qué se va a construir y por qué
+- **SDD**: Contratos de API — frontend y backend trabajan en paralelo
+- **TDD**: Lógica de dominio testeada antes de implementar
+- **Review + Test**: Validación automática contra convenciones
 
 Cada paso tiene su herramienta, su skill, y su feedback loop. No es magia — es estructura. La diferencia entre "IA que genera código mediocre" e "IA que es genuinamente útil" está en cuánto proceso le das, no cuánto prompt engineering.
 
