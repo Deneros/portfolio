@@ -1,5 +1,7 @@
 ---
 import Layout from './Layout.astro';
+import { type Lang, defaultLang } from '@/i18n/translations';
+import { useTranslations, getLocalePath, getDateLocale } from '@/i18n/utils';
 
 interface Props {
   title: string;
@@ -7,23 +9,25 @@ interface Props {
   date: string;
   tags: string[];
   readTime?: string;
+  lang?: Lang;
 }
 
-const { title, description, date, tags, readTime = '5 min' } = Astro.props;
-const formattedDate = new Date(date).toLocaleDateString('es-ES', {
+const { title, description, date, tags, readTime = '5 min', lang = defaultLang } = Astro.props;
+const t = useTranslations(lang);
+const formattedDate = new Date(date).toLocaleDateString(getDateLocale(lang), {
   year: 'numeric',
   month: 'long',
   day: 'numeric',
 });
 ---
 
-<Layout title={title} description={description}>
+<Layout title={title} description={description} lang={lang}>
   <article class="section-container max-w-3xl">
-    <a href="/blog" class="inline-flex items-center gap-2 text-[#404050] hover:text-amber-400 transition-colors duration-300 mb-10 text-xs tracking-wide">
+    <a href={getLocalePath(lang, '/blog')} class="inline-flex items-center gap-2 text-[#404050] hover:text-amber-400 transition-colors duration-300 mb-10 text-xs tracking-wide">
       <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 19l-7-7 7-7" />
       </svg>
-      Volver al blog
+      {t('blog.back')}
     </a>
 
     <header class="mb-14">
@@ -37,7 +41,7 @@ const formattedDate = new Date(date).toLocaleDateString('es-ES', {
       <div class="flex items-center gap-4 text-xs text-[#404050] animate-fade-up delay-2" style="font-family: 'JetBrains Mono', monospace;">
         <time datetime={date}>{formattedDate}</time>
         <span style="color: #2a2a35;">·</span>
-        <span>{readTime} de lectura</span>
+        <span>{readTime} {t('blog.readTime')}</span>
       </div>
     </header>
 

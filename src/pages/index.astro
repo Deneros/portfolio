@@ -1,169 +1,21 @@
 ---
-import Layout from '@layouts/Layout.astro';
-import { getCollection } from 'astro:content';
-import { site, stats } from '@/config';
-
-const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
-const featuredProjects = projects.filter((p) => p.data.featured);
+// Root page — redirects to preferred language
 ---
-
-<Layout title="Inicio">
-  <!-- Hero -->
-  <section class="section-container min-h-[90vh] flex flex-col justify-center relative">
-    <!-- Ambient glow -->
-    <div class="absolute top-1/4 -left-32 w-96 h-96 rounded-full opacity-[0.03] pointer-events-none" style="background: radial-gradient(circle, #e8a741, transparent 70%);"></div>
-
-    <div class="max-w-2xl">
-      <p class="section-label animate-fade-up">// {site.title.toLowerCase()}</p>
-
-      <h1 class="heading-display text-5xl sm:text-6xl md:text-7xl mb-8 animate-fade-up delay-1">
-        Hola, soy<br/>
-        <span class="gradient-text">{site.name}</span>
-      </h1>
-
-      <p class="text-base md:text-lg text-[#606070] leading-relaxed mb-10 max-w-lg animate-fade-up delay-2">
-        Construyo sistemas escalables con enfoque en
-        <span class="text-white">Backend</span>,
-        <span class="text-white">DevOps</span> y
-        <span class="text-white">Arquitectura de Microservicios</span>.
-        +4 años de experiencia con Spring Boot, Django, Laravel,
-        Docker, Kubernetes y automatización de infraestructura.
-      </p>
-
-      <div class="flex flex-wrap gap-4 animate-fade-up delay-3">
-        <a href="/projects" class="btn-primary">
-          Ver proyectos
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-          </svg>
-        </a>
-        <a href="/contact" class="btn-outline">Contacto</a>
-      </div>
-
-      <!-- Stats -->
-      <div class="flex items-center gap-10 mt-16 pt-8 animate-fade-up delay-4" style="border-top: 1px solid rgba(255,255,255,0.04);">
-        <div>
-          <p class="text-2xl font-bold text-white" style="font-family: 'Instrument Serif', serif;">{stats.projects}</p>
-          <p class="text-[#404050] text-xs tracking-wide mt-1">Proyectos</p>
-        </div>
-        <div class="w-px h-8" style="background: rgba(255,255,255,0.06);"></div>
-        <div>
-          <p class="text-2xl font-bold text-white" style="font-family: 'Instrument Serif', serif;">{stats.years}</p>
-          <p class="text-[#404050] text-xs tracking-wide mt-1">Años exp.</p>
-        </div>
-        <div class="w-px h-8" style="background: rgba(255,255,255,0.06);"></div>
-        <div>
-          <p class="text-2xl font-bold text-white" style="font-family: 'Instrument Serif', serif;">{stats.companies}</p>
-          <p class="text-[#404050] text-xs tracking-wide mt-1">Empresas</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Stack Técnico -->
-  <section class="section-container section-divider">
-    <p class="section-label">// stack</p>
-    <h2 class="section-title">Stack Técnico</h2>
-    <p class="section-subtitle">Tecnologías que uso en el día a día</p>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {[
-        { icon: '&#9632;', color: '#60a5fa', name: 'Backend', items: ['Spring Boot', 'Django', 'Laravel', 'FastAPI', 'Express', 'Java', 'Python', 'PHP'] },
-        { icon: '&#9670;', color: '#34d399', name: 'Frontend', items: ['React', 'Next.js', 'Astro', 'TypeScript', 'TailwindCSS', 'Flutter'] },
-        { icon: '&#9733;', color: '#c084fc', name: 'AI & Data', items: ['RAG', 'pgvector', 'Ollama', 'OpenAI', 'Celery', 'ML Pipelines'] },
-        { icon: '&#9679;', color: '#fb923c', name: 'Bases de datos', items: ['PostgreSQL', 'MySQL', 'Redis', 'Prisma', 'Flyway'] },
-        { icon: '&#9651;', color: '#22d3ee', name: 'DevOps & Cloud', items: ['Docker', 'Kubernetes', 'Dokploy', 'Jenkins', 'GitHub Actions', 'CI/CD', 'SonarQube'] },
-        { icon: '&#9674;', color: '#f472b6', name: 'Arquitectura', items: ['Microservices', 'DDD', 'REST', 'WebSockets', 'Eureka', 'API Gateway'] },
-      ].map((cat) => (
-        <div class="card">
-          <div class="flex items-center gap-3 mb-4">
-            <span class="text-sm" style={`color: ${cat.color}`} set:html={cat.icon}></span>
-            <h3 class="text-white text-sm font-semibold">{cat.name}</h3>
-          </div>
-          <div class="flex flex-wrap gap-1.5">
-            {cat.items.map((item) => (
-              <span class="tech-pill">{item}</span>
-            ))}
-          </div>
-        </div>
-      ))}
-    </div>
-  </section>
-
-  <!-- Proyectos Destacados -->
-  <section class="section-container section-divider">
-    <div class="flex items-end justify-between mb-14">
-      <div>
-        <p class="section-label">// work</p>
-        <h2 class="section-title">Proyectos Destacados</h2>
-        <p class="text-[#606070] text-base mt-1">Selección de mi trabajo más relevante</p>
-      </div>
-      <a href="/projects" class="hidden sm:inline-flex btn-outline text-xs">
-        Ver todos
-        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-        </svg>
-      </a>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      {featuredProjects.map((project) => (
-        <a href={`/projects/${project.id}`} class="card group cursor-pointer">
-          {project.data.image && (
-            <div class="mb-4 -mx-6 -mt-6 overflow-hidden rounded-t-xl">
-              <img
-                src={project.data.image}
-                alt={project.data.title}
-                class="w-full h-40 object-cover object-top opacity-80 group-hover:opacity-100 transition-opacity duration-500"
-                loading="lazy"
-              />
-            </div>
-          )}
-          <div class="flex items-start justify-between mb-5">
-            <span class={`badge-${project.data.status}`}>{project.data.statusLabel}</span>
-            <svg class="w-4 h-4 text-[#2a2a35] group-hover:text-amber-400/60 transition-colors duration-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 17L17 7M17 7H7M17 7v10" />
-            </svg>
-          </div>
-
-          <h3 class="text-lg font-semibold text-white mb-2 group-hover:text-amber-400 transition-colors duration-300" style="font-family: 'Instrument Serif', serif; font-size: 1.35rem;">
-            {project.data.title}
-          </h3>
-          <p class="text-[#505060] text-sm mb-5 leading-relaxed line-clamp-2">
-            {project.data.description}
-          </p>
-
-          <div class="flex flex-wrap gap-1.5">
-            {project.data.stack.slice(0, 5).map((tech: string) => (
-              <span class="tech-pill">{tech}</span>
-            ))}
-            {project.data.stack.length > 5 && (
-              <span class="text-[10px] text-[#3a3a45] px-2 py-1">+{project.data.stack.length - 5}</span>
-            )}
-          </div>
-        </a>
-      ))}
-    </div>
-
-    <div class="mt-6 text-center sm:hidden">
-      <a href="/projects" class="btn-outline text-xs">Ver todos los proyectos</a>
-    </div>
-  </section>
-
-  <!-- CTA -->
-  <section class="section-container section-divider text-center">
-    <p class="section-label">// contact</p>
-    <h2 class="heading-display text-3xl md:text-4xl mb-4">
-      ¿Tienes un proyecto en mente?
-    </h2>
-    <p class="text-[#505060] text-base mb-10 max-w-md mx-auto">
-      Estoy abierto a colaboraciones, freelance y oportunidades full-time.
-    </p>
-    <a href="/contact" class="btn-primary">
-      Hablemos
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-      </svg>
-    </a>
-  </section>
-</Layout>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="refresh" content="0;url=/es" />
+    <script is:inline>
+      const saved = localStorage.getItem('lang');
+      if (saved === 'en' || saved === 'es') {
+        window.location.replace('/' + saved);
+      } else {
+        const browserLang = navigator.language || navigator.userLanguage || 'es';
+        const lang = browserLang.startsWith('es') ? 'es' : 'en';
+        localStorage.setItem('lang', lang);
+        window.location.replace('/' + lang);
+      }
+    </script>
+  </head>
+  <body></body>
+</html>

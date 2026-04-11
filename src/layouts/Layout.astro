@@ -1,23 +1,32 @@
 ---
 import '../styles/global.css';
 import { site, social } from '@/config';
+import { type Lang, defaultLang } from '@/i18n/translations';
+import { useTranslations, getLocalePath, getAlternateLang } from '@/i18n/utils';
 
 interface Props {
   title: string;
   description?: string;
+  lang?: Lang;
 }
 
-const { title, description = `${site.name} — ${site.description}` } = Astro.props;
+const { title, description = `${site.name} — ${site.description}`, lang = defaultLang } = Astro.props;
+const t = useTranslations(lang);
+const altLang = getAlternateLang(lang);
+const currentPath = Astro.url.pathname.replace(`/${lang}`, '') || '/';
+const altPath = getLocalePath(altLang, currentPath);
 ---
 
 <!doctype html>
-<html lang="es">
+<html lang={lang}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
     <meta name="generator" content={Astro.generator} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate" hreflang="es" href={`${site.url}/es${currentPath === '/' ? '' : currentPath}`} />
+    <link rel="alternate" hreflang="en" href={`${site.url}/en${currentPath === '/' ? '' : currentPath}`} />
     <title>{title} | {site.name}</title>
   </head>
   <body class="min-h-screen">
@@ -26,19 +35,28 @@ const { title, description = `${site.name} — ${site.description}` } = Astro.pr
       style="background: rgba(10,10,15,0.7); backdrop-filter: blur(20px) saturate(1.4); border-bottom: 1px solid rgba(255,255,255,0.04);"
     >
       <nav class="max-w-5xl mx-auto px-6 sm:px-8 lg:px-10 h-14 flex items-center justify-between">
-        <a href="/" class="group flex items-center gap-1">
+        <a href={getLocalePath(lang)} class="group flex items-center gap-1">
           <span class="text-lg font-bold text-white tracking-tight">NV</span>
           <span class="text-lg font-bold text-amber-400 transition-transform group-hover:rotate-12">.</span>
         </a>
 
         <div class="hidden md:flex items-center gap-7">
-          <a href="/" class="text-[13px] text-[#505060] hover:text-white transition-colors duration-300">Inicio</a>
-          <a href="/projects" class="text-[13px] text-[#505060] hover:text-white transition-colors duration-300">Proyectos</a>
-          <a href="/blog" class="text-[13px] text-[#505060] hover:text-white transition-colors duration-300">Blog</a>
-          <a href="/contact" class="text-[13px] text-[#505060] hover:text-white transition-colors duration-300">Contacto</a>
+          <a href={getLocalePath(lang)} class="text-[13px] text-[#505060] hover:text-white transition-colors duration-300">{t('nav.home')}</a>
+          <a href={getLocalePath(lang, '/projects')} class="text-[13px] text-[#505060] hover:text-white transition-colors duration-300">{t('nav.projects')}</a>
+          <a href={getLocalePath(lang, '/blog')} class="text-[13px] text-[#505060] hover:text-white transition-colors duration-300">{t('nav.blog')}</a>
+          <a href={getLocalePath(lang, '/contact')} class="text-[13px] text-[#505060] hover:text-white transition-colors duration-300">{t('nav.contact')}</a>
         </div>
 
         <div class="flex items-center gap-3">
+          {/* Language toggle */}
+          <a
+            href={altPath}
+            class="text-[11px] font-mono text-[#505060] hover:text-amber-400 transition-colors duration-300 px-2 py-1 rounded border border-transparent hover:border-amber-400/20"
+            aria-label={`Switch to ${altLang === 'es' ? 'Español' : 'English'}`}
+          >
+            {altLang.toUpperCase()}
+          </a>
+
           <a
             href={social.github}
             target="_blank"
@@ -76,10 +94,13 @@ const { title, description = `${site.name} — ${site.description}` } = Astro.pr
 
       <div id="mobile-menu" class="hidden md:hidden" style="background: rgba(10,10,15,0.95); backdrop-filter: blur(20px); border-top: 1px solid rgba(255,255,255,0.04);">
         <div class="px-6 py-5 space-y-4">
-          <a href="/" class="block text-sm text-[#606070] hover:text-white transition-colors">Inicio</a>
-          <a href="/projects" class="block text-sm text-[#606070] hover:text-white transition-colors">Proyectos</a>
-          <a href="/blog" class="block text-sm text-[#606070] hover:text-white transition-colors">Blog</a>
-          <a href="/contact" class="block text-sm text-[#606070] hover:text-white transition-colors">Contacto</a>
+          <a href={getLocalePath(lang)} class="block text-sm text-[#606070] hover:text-white transition-colors">{t('nav.home')}</a>
+          <a href={getLocalePath(lang, '/projects')} class="block text-sm text-[#606070] hover:text-white transition-colors">{t('nav.projects')}</a>
+          <a href={getLocalePath(lang, '/blog')} class="block text-sm text-[#606070] hover:text-white transition-colors">{t('nav.blog')}</a>
+          <a href={getLocalePath(lang, '/contact')} class="block text-sm text-[#606070] hover:text-white transition-colors">{t('nav.contact')}</a>
+          <a href={altPath} class="block text-sm text-amber-400/60 hover:text-amber-400 transition-colors font-mono">
+            {altLang === 'es' ? '🇪🇸 Español' : '🇺🇸 English'}
+          </a>
         </div>
       </div>
     </header>
@@ -92,14 +113,14 @@ const { title, description = `${site.name} — ${site.description}` } = Astro.pr
       <div class="max-w-5xl mx-auto px-6 sm:px-8 lg:px-10 py-14">
         <div class="flex flex-col md:flex-row justify-between items-center gap-8">
           <div class="text-center md:text-left">
-            <a href="/" class="text-lg font-bold text-white tracking-tight">NV<span class="text-amber-400">.</span></a>
-            <p class="text-[#404050] text-xs mt-1 tracking-wide">{site.tagline}</p>
+            <a href={getLocalePath(lang)} class="text-lg font-bold text-white tracking-tight">NV<span class="text-amber-400">.</span></a>
+            <p class="text-[#404050] text-xs mt-1 tracking-wide">{t('footer.tagline')}</p>
           </div>
 
           <div class="flex items-center gap-6 text-[13px] text-[#404050]">
-            <a href="/projects" class="hover:text-white transition-colors duration-300">Proyectos</a>
-            <a href="/blog" class="hover:text-white transition-colors duration-300">Blog</a>
-            <a href="/contact" class="hover:text-white transition-colors duration-300">Contacto</a>
+            <a href={getLocalePath(lang, '/projects')} class="hover:text-white transition-colors duration-300">{t('nav.projects')}</a>
+            <a href={getLocalePath(lang, '/blog')} class="hover:text-white transition-colors duration-300">{t('nav.blog')}</a>
+            <a href={getLocalePath(lang, '/contact')} class="hover:text-white transition-colors duration-300">{t('nav.contact')}</a>
           </div>
 
           <p class="text-[#2a2a35] text-xs">
